@@ -17,12 +17,11 @@ use Illuminate\Http\Request;
 Route::get('/pessoas', ['middleware' => 'cors', function (Request $request) {
 
     //Filtro
-    $like = $request->get('like');
     $limit = $request->get('limit', 15);
 
     //Order
-    $order = $request->get('order', 'ASC');
-    $by = $request->get('by', 'nome');
+    $order = $request->get('order', 'nome');
+    $by = $request->get('by', $order{0}=='-'?'DESC':'ASC');
 
-    return \App\Pessoa::orderBy($by, $order)->paginate();
+    return \App\Pessoa::orderBy(str_replace('-', '', $order), $by)->paginate($limit);
 }]);

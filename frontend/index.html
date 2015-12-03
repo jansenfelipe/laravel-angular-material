@@ -19,7 +19,7 @@
 <body layout="column" ng-controller="AppController as vm">
 <md-toolbar layout="row">
     <div class="md-toolbar-tools">
-        <h1>Lista de Pessoas</h1>
+        <h1>Laravel + Angular + Material Design</h1>
     </div>
 </md-toolbar>
 
@@ -28,31 +28,33 @@
     <div layout="column" flex id="content">
         <md-content layout="column" flex class="md-padding">
 
-            <md-data-table-toolbar>
-                <h2 class="md-title">Pessoas</h2>
-            </md-data-table-toolbar>
+            <md-card class="md-default-theme">
 
-            <md-data-table-container>
-                <table md-data-table md-row-select="selected" md-progress="deferred">
-                    <thead md-order="query.order" md-trigger="onOrderChange">
-                    <tr>
-                        <th name="Nome" order-by="nome"></th>
-                        <th name="Documento" order-by="documento"></th>
-                        <th name="Gênero" order-by="genero"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr md-auto-select ng-repeat="pessoa in pessoas.data">
-                        <td>{{pessoa.nome}}</td>
-                        <td>{{pessoa.documento}}</td>
-                        <td>{{pessoa.genero}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </md-data-table-container>
+                <md-data-table-toolbar>
+                    <h2 class="md-title">Pessoas</h2>
+                </md-data-table-toolbar>
 
-            <md-data-table-pagination md-limit="query.limit" md-page="query.page" md-total="{{pessoas.total}}" md-trigger="onPaginationChange"></md-data-table-pagination>
+                <md-data-table-container>
+                    <table md-data-table md-row-select="selected" md-progress="deferred">
+                        <thead md-order="query.order" md-trigger="onOrderChange">
+                        <tr>
+                            <th name="Nome" order-by="nome"></th>
+                            <th name="Documento" order-by="documento"></th>
+                            <th name="Gênero" order-by="genero"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr md-auto-select ng-repeat="pessoa in pessoas.data">
+                            <td>{{pessoa.nome}}</td>
+                            <td>{{pessoa.documento}}</td>
+                            <td>{{pessoa.genero}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </md-data-table-container>
 
+                <md-data-table-pagination md-limit="query.limit" md-page="query.page" md-total="{{pessoas.total}}" md-trigger="onPaginationChange"></md-data-table-pagination>
+            </md-card>
         </md-content>
     </div>
 
@@ -72,32 +74,52 @@
 
         $scope.selected = [];
 
-        //Buscando itens da lista ao carregar
-        consultar(1);
-
-
-        $scope.onPaginationChange = function (page, limit) {
-            consultar(page);
+        $scope.query = {
+            order: 'nome',
+            limit: 5,
+            page: 1
         };
 
+        //Buscando itens ao iniciar
+        consultar();
+
+        $scope.onPaginationChange = function (page, limit) {
+            $scope.query.page = page;
+            $scope.query.limit = limit;
+
+            //Consultando ao acionar paginação
+            return consultar();
+        };
+
+        $scope.onOrderChange = function (order) {
+
+            //Consultando ao acionar ordenação
+            return consultar();
+        };
 
         /*
          * Função que efetua a consulta no webservice
          * e altera a variável pessoas do escopo
          */
-        function consultar(page){
-            $http.get('http://localhost:8000/pessoas?page='+page).then(function(response){
+        function consultar(){
+            var url ='http://localhost:8000/pessoas';
+            url += '?page='+$scope.query.page;
+            url += '&limit='+$scope.query.limit;
+            url += '&order='+$scope.query.order;
+
+            return $http.get(url).then(function(response){
 
                 $scope.pessoas = response.data;
 
                 $scope.query = {
                     limit: response.data.per_page,
-                    page: response.data.current_page
+                    page: response.data.current_page,
+                    order: $scope.query.order
                 };
 
             },function(response){
                 console.warn(response);
-            });
+            }).$promise;
         }
     });
 
