@@ -1,0 +1,9 @@
+{
+  "name": "laravel-angular-material",
+  "version": "1.0.0",
+  "devDependencies": {
+    "http-server": "^0.8.5"
+  },
+  "author": "Jansen Felipe",
+  "license": "MIT"
+}

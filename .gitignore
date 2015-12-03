@@ -4,3 +4,4 @@
 /backend/Homestead.yaml
 /backend/Homestead.json
 /backend/.env
+frontend/node_modules/
