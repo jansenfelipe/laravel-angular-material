@@ -86,7 +86,7 @@
          * e altera a variável pessoas do escopo
          */
         function consultar(page){
-            $http.get('/pessoas?page='+page).then(function(response){
+            $http.get('http://localhost:8000/pessoas?page='+page).then(function(response){
 
                 $scope.pessoas = response.data;
 
