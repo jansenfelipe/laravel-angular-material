@@ -14,7 +14,7 @@
 
 use Illuminate\Http\Request;
 
-Route::get('/pessoas', function (Request $request) {
+Route::get('/pessoas', ['middleware' => 'cors', function (Request $request) {
 
     //Filtro
     $like = $request->get('like');
@@ -25,4 +25,4 @@ Route::get('/pessoas', function (Request $request) {
     $by = $request->get('by', 'nome');
 
     return \App\Pessoa::orderBy($by, $order)->paginate();
-});
+}]);
